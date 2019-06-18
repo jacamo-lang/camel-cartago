@@ -2,9 +2,7 @@ package artifactComponent;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Vector;
@@ -21,11 +19,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import jacamo.platform.DefaultPlatformImpl;
 import jacamo.project.JaCaMoProject;
-import jason.asSemantics.TransitionSystem;
 import jason.infra.centralised.BaseCentralisedMAS;
-import jason.mas2j.AgentParameters;
-import jason.mas2j.ClassParameters;
-import jason.mas2j.MAS2JProject;
 
 
 public class ArtifactCamel extends DefaultPlatformImpl{
@@ -35,22 +29,13 @@ public class ArtifactCamel extends DefaultPlatformImpl{
 	private static Vector<CamelArtArch> archList = new Vector<CamelArtArch>();
 	private static Vector<CamelContext> contexts = new Vector<CamelContext>();
 
+	private static ApplicationContext applicationContext;
+
 	@Override
 	public void init(String[] args) throws Exception{
 		masProject = project;
 		
 		logger.setLevel(Level.INFO);
-		List<AgentParameters> lags = new ArrayList<AgentParameters>();
-		// Redefines all agent's .send
-		/*
-		logger.info("Defining agents' .send internal action.");
-		for (AgentParameters ap: project.getAgents()) {
-			if (ap.getNbInstances() > 0) {
-				lags.add(ap);
-				ap.addArchClass(new ClassParameters(CamelAgArch.class.getName()));
-			}
-		}
-		 */
 		BaseCentralisedMAS.getRunner().getRuntimeServices().registerDefaultAgArch(CamelArtArch.class.getName());
 
 
@@ -86,7 +71,7 @@ public class ArtifactCamel extends DefaultPlatformImpl{
 				
 				if (contextFile != null) {
 					try {
-						ApplicationContext applicationContext = new FileSystemXmlApplicationContext(contextFile);
+						applicationContext = new FileSystemXmlApplicationContext(contextFile);
 						logger.info("Loading context configurations from: " + contextFile);
 						String[] beanNames=applicationContext.getBeanDefinitionNames();
 						if (beanNames != null) {
@@ -97,6 +82,7 @@ public class ArtifactCamel extends DefaultPlatformImpl{
 								registry.bind(name,applicationContext.getBean(name));
 							}
 						}
+						
 					}catch (Exception e){
 						logger.warning("No " + contextFile + " in " + System.getProperty("user.dir"));
 						logger.warning(e.toString());

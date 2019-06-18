@@ -115,12 +115,9 @@ Defining a consumer endpoint is analog, the difference being that the producer U
 ```
 
 #### Examples
-Let's say you want to integrate a semaphor as an artifact to your MAS. The semaphor has an operation of request closure, for pedestrians to cross the street, and it signals drivers and pedestrians when it changes its state. Also, drivers are able to look and perceive at any time the semaphor's light colour. In that case the artifact should have an observable property, lightColour(red | green), an operation with no arguments, requestClosure(), and emmits two signals, turnedGreen and turnedRed. Let's establish that the artifact's name should be roadSemaphor1, as we could have several.
+Let's say you want to integrate a semaphor, from semaphorComponent, as an artifact to your MAS. The semaphor has an operation of requesting closure for pedestrians to cross the street, and it signals drivers and pedestrians when it changes its state. Also, drivers are able to look and perceive at any time the semaphor's light colour. In that case the artifact should have an observable property, lightColour(RED | GREEN), an operation with no arguments, requestClosure(), and emmits two signals, turnedGreen and turnedRed. Let's establish that the artifact's name should be roadSemaphor1, as we could have several.
 
-################################# REVIEW
-From component "phone" to agent "jomi". First of all you must be sure that "phone" is a valid camel component with its dependency imported in gradle. You can check Camel's official components [here](http://camel.apache.org/component-list-grouped.html).
-################################# REVIEW
-
+First of all you must be sure that "semaphorComponent" is a valid camel component with its dependency imported in gradle. You can check Camel's official components [here](http://camel.apache.org/component-list-grouped.html). Some components aren't official but will work just fine.
 
 Let's register the operation, for each operation a route should be made. Whenever an agent calls the operation 'requestClosure', the semaphor component's producer should receive the request. So: from the operation requestClosure to the semaphor's producer endpoint.
 
@@ -179,41 +176,6 @@ And finally put that route in your context:
 </routes>
 ```
 
-Important, if you want to define two routes with the same producer, and diferent conditionals, you **MUST** put in a single route and use <when\>, which is analog to the usual "if" statement.
-So in the example above, if the source for "myPhone" can be agents "Jomi" or "Maicon", you must define your consumer route as:
-
-```
-<route id="fromAgentsToMyPhone">
-  <from uri="jacamo-agent:myPhone"/>
-  <choice>
-    <when>
-      <simple>${exchangeProperty[source]} == "jomi" and ${in.body} contains "jason"</simple>
-      <to uri="jacamo-agent:mateus?performative=achieve&content=report("jason")"
-    </when>
-    <when>
-      <simple>${exchangeProperty[source]} == "maicon"</simple>
-      <.... do a different thing ....>
-    </when>
-  </choice>
-</route>
-```
-
-If you try the following, it **WON'T** work:
-
-```
-<route id="fromJomiToMyPhone">
-  <from uri="jacamo-agent:myPhone?source=jomi"/>
-  <to uri="jacamo-agent:mateus?performative=achieve&content=report("jason")"
-</route>
-
-<route id="fromMaiconToMyPhone">
-  <from uri="jacamo-agent:myPhone?source=maicon"/>
-  <.... do a different thing ....>
-</route>
-```
-
-Since both consumers have the address "myPhone", one route would overwrite another.
-This also goes to different route files, you **should not** define the same consumer address in different routes, as only one will consume the message.
 
 #### Routes properties and configurations
 
@@ -231,32 +193,17 @@ Here's a list of possible producer properties to be defined as a URI argument:
     <td class="tg-0pky">Description</td>
   </tr>
   <tr>
-    <td class="tg-0pky">performative</td>
-    <td class="tg-0pky">tell</td>
-    <td class="tg-0pky">the performative or illocutionary force, is the "purpose" of the message.<br>It can be: tell, untell, achieve, unachieve, askOne, askAll, tellHow, untellHow, askHow;</td>
-  </tr>
-  <tr>
-    <td class="tg-0pky">source</td>
-    <td class="tg-0pky">camel</td>
-    <td class="tg-0pky">the origin of the message, the receiver agent will believe the "source" is another agent and might reply to it;</td>
-  </tr>
-  <tr>
-    <td class="tg-0pky">msgId</td>
-    <td class="tg-0pky">*auto generated*</td>
-    <td class="tg-0pky">an id to locate the message, mainly serves to send replies to messages with "askOne" and "askAll" performatives;</td>
-  </tr>
-  <tr>
-    <td class="tg-0pky">irt</td>
+    <td class="tg-0pky">property</td>
     <td class="tg-0pky">*null*</td>
-    <td class="tg-0pky">a history of the replies to messages;</td>
+    <td class="tg-0pky">the observable property or signal name and value (e.g. size(10), mailbox(bob, 3));</td>
   </tr>
   <tr>
-    <td class="tg-0pky">content</td>
-    <td class="tg-0pky">*null*</td>
-    <td class="tg-0pky">the message's body, it's really important to know the format of the content since agents may not receive it correctly.<br>The user should take care of handling well this element.</td>
+    <td class="tg-0pky">isSignal</td>
+    <td class="tg-0pky">true</td>
+    <td class="tg-0pky">flag to make the property persistent (observable property) or as a signal;</td>
   </tr>
   <tr>
-    <td class="tg-0lax" colspan="3">Note: all the elements, despite having a default value, will give priority to the exchange's properties over the default value.<br>The priority order is as follow: user input &gt; exchange property &gt; default value.</td>
+    <td class="tg-0lax" colspan="3">Note: all the elements, despite having a default value, will give priority to the exchange's properties over the default value.<br>The priority order is as follow: URI definition &gt; exchange property &gt; default value.</td>
   </tr>
 </table>
 
@@ -272,23 +219,14 @@ Here's also a list of possible consumer properties to be defined as a URI argume
     <td class="tg-0pky">Description</td>
   </tr>
   <tr>
-    <td class="tg-0pky">performative</td>
-    <td class="tg-0pky">\*</td>
-    <td class="tg-0pky">-</td>
+    <td class="tg-0pky">operation</td>
+    <td class="tg-0pky">*null*</td>
+    <td class="tg-0pky">the operation's name;</td>
   </tr>
   <tr>
-    <td class="tg-0pky">source</td>
-    <td class="tg-0pky">\*</td>
-    <td class="tg-0pky">-</td>
-  </tr>
-  <tr>
-    <td class="tg-0pky">irt</td>
-    <td class="tg-0pky">\*</td>
-    <td class="tg-0pky">-</td>
-  </tr>
-  <tr>
-    <td class="tg-0lax" colspan="3">Note: all the consumer's elements serve as a filter, so if the user writes `performative=tell&amp;source=jomi`, only the messages with "tell" as performative and "jomi" as source will be consumed.
-    Also, if you wish to filter the contents, you can easily use Camel's Simple language operator `contains` (e.g. `${body} contains "oi"` )</td>
+    <td class="tg-0pky">args</td>
+    <td class="tg-0pky">()</td>
+    <td class="tg-0pky">the operation argument's names, should always be within parenthesis and comma separated (e.g. args=(accountNumber, newValue) );</td>
   </tr>
 </table>
 
@@ -314,7 +252,7 @@ This would be `beans.xml`:
 And `project.jcm` would have:
 
 ```
-platform: jasonComponent.JasonCamel("routes-file-name.xml --beans.xml")
+platform: artifactComponent.ArtifactCamel("routes-file-name.xml --beans.xml")
 ```
 
 ### Debugging and logging
@@ -341,13 +279,14 @@ Here's an example:
 ```
 <routes xmlns="http://camel.apache.org/schema/spring">
     <route id="loggingRoute">
-      <from uri="jacamo-agent:myPhone?source=alice"/>
-      <log message="Incoming call from alice!"/>
-      <to uri="jacamo-agent:bob?content=received(myPhone, alice)"/>
-      <to uri="phone:myPhone"/>
+      <from uri="jacamo-artifact:myPhone?operation=call&amp;args=(number)"/>
+      <log message="Making call!"/>
+      <to uri="phone:myPhoneAddress?..."/>
     </route>
 </routes>
 ```
+
+##################### STOPPED HERE, REVIEW LOG
 
 If your run it, in your terminal you would expect the following:
 

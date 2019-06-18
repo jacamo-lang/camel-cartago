@@ -77,7 +77,7 @@ task run (type: JavaExec, dependsOn: 'classes') {
         mkdir 'log'
     }
     main 'jacamo.infra.JaCaMoLauncher'
-    args 'auction.jcm'
+    args 'main.jcm'
     classpath sourceSets.main.runtimeClasspath
 }
 
