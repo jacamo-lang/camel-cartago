@@ -272,7 +272,7 @@ compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.25'
 compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 ```
 
-This dependency is important for testing and debugging your routes. You can define a producer that won't affect the exchange object using `<log message=""/>`.
+This dependency is usefull for testing and debugging your routes. You can define a producer that won't affect the exchange object using `<log message=""/>`.
 
 Here's an example:
 
