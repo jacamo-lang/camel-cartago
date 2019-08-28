@@ -1,11 +1,13 @@
-# Jason Component
+# CArtAgO Component
 ## Overview
-This project contains an implementation of a custom Apache Camel component that gives agents, from a MAS JaCaMo project, a way to communicate with other services.  
+It's important to notice this component has not been release to user use, it is still under development and contains bugs, debug purposed comments, and minor implementation mistakes. This documentation itself is not yet complete, and should be take with 'a grain of salt'. Any note or recomendation concerning this projects is welcome.
+
+This project contains an implementation of a custom Apache Camel component that gives agents, from a MAS JaCaMo project, a way to interact with other services as they were environmental artifacts through operations and perceptions.
 Apache Camel is a framework based on Enterprise Integration Patterns that aims to resolve  integration problems between components.
 
 Camel's approach gives Endpoints to each component and transmits messages encapsulated in Exchange objects.  
 When a component should receive data, it uses a Consumer, that consumes the data and encapsulates it in an Exchange object to be processed. In an analog way, when a component must deliver data, the former retrieves the latter by processing an Exchange object with a Producer, and then produces the data in a proper target format.  
-The Jason Component gives MAS agents the perception of other services as other agents, and the ability to contact them by simply sending a message, with `.send` in JaCaMo.  
+The CArtAgO Component gives MAS agents the perception of other services as CArtAgO artifacts, and the ability to perceive observable properties and invoke operations.  
 The following image better represents the stated:
 
 ![Communication Flow](./images/CommunicationFlow.pdf?raw=true)

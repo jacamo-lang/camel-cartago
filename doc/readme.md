@@ -1,5 +1,7 @@
 # JaCaMo Artifact Component
 ## Overview
+It's important to notice this component has not been release to user use, it is still under development and contains bugs, debug purposed comments, and minor implementation mistakes. This documentation itself is not yet complete, and should be take with 'a grain of salt'. Any note or recomendation concerning this projects is welcome.
+
 This project contains an implementation of a custom Apache Camel component that gives agents, from a MAS JaCaMo project, a way to interact with other services as environmental artifacts.
 Apache Camel is a framework based on Enterprise Integration Patterns that aims to resolve  integration problems between components.
 
@@ -42,7 +44,7 @@ repositories {
 dependencies {
   compile 'org.jacamo:jacamo:1.0-SNAPSHOT'
 
-  compile group: 'org.jacamo-lang',     name: 'camel-cartago' ,   version: '0.1'
+  compile group: 'org.jacamo-lang',     name: 'camel-cartago' ,   version: '0.3'
 
   compile group: 'org.apache.camel', name: 'camel-core', version: '2.22.1'
 
@@ -228,9 +230,32 @@ Here's also a list of possible consumer properties to be defined as a URI argume
     <td class="tg-0pky">()</td>
     <td class="tg-0pky">the operation argument's names, should always be within parenthesis and comma separated (e.g. args=(accountNumber, newValue) );</td>
   </tr>
+  <tr>
+    <td class="tg-0pky">returns</td>
+    <td class="tg-0pky">()</td>
+    <td class="tg-0pky">the operation's expected return variables names, should always be within parenthesis and comma separated (e.g. args=(sumResult) ).;</td>
+  </tr>
 </table>
 
-For more examples check the *Examples* section down below.
+#### Defining operations with return value
+This section is to properly explain the attribute `returns`. It is used when an agent expects unification to an operation result, to unify a value to an variable or to check a condition.
+Let's have the following scenario: you can access a GPS server to calculate the smaller distance between two points. The server has it's camel component, `gpsCamel`, which expects two parameters in headers named `start` and `end`, and populates the processed exchange object with the result in a header named `smallerDistance`.
+To enable the agents to use in a friendly way this service, you could model the GPS server as an artifact with the following route:
+```
+<route id="gpsDistanceRoute">
+
+  <from uri="jacamo-artifact:gpsArtifact?operation=gpsDistance&amp;args=(start, end)&amp;returns=(Distance)"/>
+  <to uri="gpsCamel:serverAddress"/>
+  <setHeader headerName="Distance"><simple>${exchangeProperty[smallerDistance]}</simple></setHeader>
+
+</route>
+```
+This route is doing the following, from lines 3rd to 5th (make sure to completely understand the first line before moving on):
+* creates in a dummy artifact named `gpsArtifact`, an operation that receives two arguments and returns one. The operation should be called, by the agents, as `gpsDistance(PA, PB, X)`, where `PA` and `PB` should be unified to values, and X may or may not be already unified with a value;
+* sends an exchange object with headers = {"start":[PA's value], "end":[PB's value]}
+* sets the return variable `Distance` value to be the value in `smallerDistance` header, this variable is then unifyed to the agent's variable `X`;
+
+For more examples check the *Examples*.
 
 ### Using custom context configuration
 In Camel, you can also use custom configurations in your context. This asset is mainly used when defining Beans.

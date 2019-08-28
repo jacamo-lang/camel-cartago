@@ -54,6 +54,7 @@ public class ArtifactProducer extends DefaultProducer {
 //		}
 		
 //		String workspace = endpoint.getWorkspace();
+		
 		String content = null;
 		if(endpoint.getProperty() != null)
 			content = endpoint.getProperty();

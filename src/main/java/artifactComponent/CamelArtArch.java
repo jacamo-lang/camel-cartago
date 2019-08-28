@@ -26,14 +26,18 @@ public class CamelArtArch extends AgArch {
 		if(perceptions == null)
 			perceptions = new ArrayList<Literal>();
 		
-		for(String artifact: focusedArtifacts)
-			perceptions.addAll(ArtifactProducer.getObservableProperties().get(artifact));
+		for(String artifact: focusedArtifacts) {
+			Collection<Literal> percepts = ArtifactProducer.getObservableProperties().get(artifact);
+			if(percepts != null)
+			perceptions.addAll(percepts);
+		}
 		
 		return perceptions;
 	}
 	
 	@Override
 	public void act(ActionExec a)  {
+		System.out.println("----- Entrou no ArtArch");
 		String functor = a.getActionTerm().getFunctor();
 		if(functor.equals("focus") && a.getActionTerm().getTerm(0)!=null) {
 			focusedArtifacts.add(a.getActionTerm().getTerm(0).toString());
@@ -49,12 +53,14 @@ public class CamelArtArch extends AgArch {
 			}
 			
 			a.setResult(failureReason == null);
-			if(a.getResult() == true)
-				consumer.operate(a.getActionTerm().getTermsArray());
-			else
+			if(a.getResult() == true) {
+//				let the operate function states when the action is executed since might wait for return
+				consumer.operate(this, a);
+				System.out.println("--------- END OF ARCH OPERATION");
+			}else {
 				a.setFailureReason(a.getActionTerm().copy(), failureReason);
-			
-			actionExecuted(a);
+				actionExecuted(a);
+			}
 		}else {
 			System.out.println("No operation registered: "+a.getActionTerm().getFunctor());
 			super.act(a);

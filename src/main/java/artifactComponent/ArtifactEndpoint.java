@@ -22,6 +22,7 @@ public class ArtifactEndpoint extends DefaultEndpoint {
 	private String property = null;
 	private Boolean isSignal = false;
 	private String workspace = "main";
+	private String returns = null;
 	
 	public ArtifactEndpoint() {
 	}
@@ -98,7 +99,10 @@ public class ArtifactEndpoint extends DefaultEndpoint {
 	}
 
 	public String getArgs() {
-		return args;
+		if(args!=null)
+			return args;
+		else
+			return "()";
 	}
 
 	public void setArgs(String args) {
@@ -132,6 +136,17 @@ public class ArtifactEndpoint extends DefaultEndpoint {
 
 	public void setWorkspace(String workspace) {
 		this.workspace = workspace;
+	}
+
+	public String getReturns() {
+		if(returns!=null)
+			return returns;
+		else
+			return "()";
+	}
+
+	public void setReturns(String returns) {
+		this.returns = returns;
 	}
 
 }
