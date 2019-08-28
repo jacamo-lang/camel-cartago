@@ -26,8 +26,11 @@ public class CamelArtArch extends AgArch {
 		if(perceptions == null)
 			perceptions = new ArrayList<Literal>();
 		
-		for(String artifact: focusedArtifacts)
-			perceptions.addAll(ArtifactProducer.getObservableProperties().get(artifact));
+		for(String artifact: focusedArtifacts) {
+			Collection<Literal> percepts = ArtifactProducer.getObservableProperties().get(artifact);
+			if(percepts != null)
+			perceptions.addAll(percepts);
+		}
 		
 		return perceptions;
 	}
@@ -49,12 +52,13 @@ public class CamelArtArch extends AgArch {
 			}
 			
 			a.setResult(failureReason == null);
-			if(a.getResult() == true)
-				consumer.operate(a.getActionTerm().getTermsArray());
-			else
+			if(a.getResult() == true) {
+//				let the operate function states when the action is executed since might wait for return
+				consumer.operate(this, a);
+			}else {
 				a.setFailureReason(a.getActionTerm().copy(), failureReason);
-			
-			actionExecuted(a);
+				actionExecuted(a);
+			}
 		}else {
 			System.out.println("No operation registered: "+a.getActionTerm().getFunctor());
 			super.act(a);

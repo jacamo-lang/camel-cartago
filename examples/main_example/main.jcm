@@ -7,8 +7,9 @@ http://jacamo.sourceforge.net/tutorial/coordination
 */
 
 mas auction {
-    agent bob   : bob.asl
+    /* agent bob   : bob.asl */
     agent alice   : alice.asl
 
+    /* platform: jasonComponent.JasonCamel("routes.xml") */
     platform: artifactComponent.ArtifactCamel("routes.xml")
 }
