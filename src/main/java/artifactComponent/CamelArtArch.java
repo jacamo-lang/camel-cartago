@@ -12,29 +12,29 @@ import jason.asSyntax.Literal;
 
 public class CamelArtArch extends AgArch {
 	private Vector<String> focusedArtifacts;
-	
+
 	@Override
 	public void init() throws Exception {
 		focusedArtifacts = new Vector<String>();
 		ArtifactCamel.insertArchList(this);
 		System.out.println(getAgArchClassesChain());
 	}
-	
+
 	@Override
 	public Collection<Literal> perceive(){
 		Collection<Literal> perceptions = super.perceive();
 		if(perceptions == null)
 			perceptions = new ArrayList<Literal>();
-		
+
 		for(String artifact: focusedArtifacts) {
 			Collection<Literal> percepts = ArtifactProducer.getObservableProperties().get(artifact);
 			if(percepts != null)
 			perceptions.addAll(percepts);
 		}
-		
+
 		return perceptions;
 	}
-	
+
 	@Override
 	public void act(ActionExec a)  {
 		String functor = a.getActionTerm().getFunctor();
@@ -44,13 +44,13 @@ public class CamelArtArch extends AgArch {
 			actionExecuted(a);
 		}else if(ArtifactConsumer.getConsumers().containsKey(functor)) {
 			ArtifactConsumer consumer = ArtifactConsumer.getConsumers().get(functor);
-			
+
 			String failureReason = null;
 
 			if(!hasFocusOn(consumer.getArtName())) {
 				failureReason = "Agent must focus the artifact "+consumer.getArtName();
 			}
-			
+
 			a.setResult(failureReason == null);
 			if(a.getResult() == true) {
 //				let the operate function states when the action is executed since might wait for return
@@ -64,11 +64,11 @@ public class CamelArtArch extends AgArch {
 			super.act(a);
 		}
 	}
-	
+
 	public void signalize(Event event) {
 		this.getTS().updateEvents(event);
 	}
-	
+
 	public boolean hasFocusOn(String artName) {
 		return focusedArtifacts.contains(artName);
 	}

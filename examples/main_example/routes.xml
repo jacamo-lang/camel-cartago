@@ -5,12 +5,6 @@
     <to uri="jacamo-artifact:dummyArtifact?isSignal=true&amp;property=tick"/>
   </route> -->
 
-  <route id="otherasdkas">
-    <from uri="jacamo-artifact:dummyArtifact?operation=other"/>
-    <setBody><simple>val(otherWorked)</simple></setBody>
-    <to uri="jacamo-artifact:dummyArtifact"/>
-  </route>
-
   <route id="updateProperty">
     <from uri="jacamo-artifact:dummyArtifact?operation=updateProp&amp;args=(Arg)"/>
     <setBody><simple>val(${exchangeProperty[Arg]})</simple></setBody>

@@ -5,7 +5,6 @@ counter(0).
 +!start
   <-  .print("-----Agent started");
       focus(dummyArtifact);
-      other;
       callMe(X);
       .print("Unifyed X with", X)
       callMe(myReturnValue);
