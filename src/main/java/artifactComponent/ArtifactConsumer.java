@@ -107,7 +107,7 @@ public class ArtifactConsumer extends DefaultConsumer {
 				if(exchange.getIn().getHeader(returns[i]) != null)
 					returnHeader = exchange.getIn().getHeader(returns[i]).toString();
 				if(returnHeader == null) {
-					a.setFailureReason(ASSyntax.createLiteral("unify_error", a.getActionTerm().getTerm(i)), "Exchange header"+returns[i]+" is null: ");
+					a.setFailureReason(ASSyntax.createLiteral("unify_error", a.getActionTerm().getTerm(args.length + i)), "Exchange header"+returns[i]+" is null: ");
 					a.setResult(false);
 					break;
 				}
@@ -116,9 +116,9 @@ public class ArtifactConsumer extends DefaultConsumer {
 				}else{
 					returnTerm = Literal.parseLiteral(returnHeader);					
 				}
-				logger.info("Unifying "+a.getActionTerm().getTerm(i)+" to "+returnHeader);
-				if( !un.unifies(returnTerm, a.getActionTerm().getTerm(i)) ) {
-					a.setFailureReason(ASSyntax.createLiteral("unify_error", a.getActionTerm().getTerm(i)), "Error unifying terms: " + a.getActionTerm().getTerm(i).toString() + " with " + returnHeader);
+				logger.info("Unifying "+a.getActionTerm().getTerm(args.length + i)+" to "+returnHeader);
+				if( !un.unifies(returnTerm, a.getActionTerm().getTerm(args.length + i)) ) {
+					a.setFailureReason(ASSyntax.createLiteral("unify_error", a.getActionTerm().getTerm(args.length + i)), "Error unifying terms: " + a.getActionTerm().getTerm(args.length + i).toString() + " with " + returnHeader);
 					a.setResult(false);
 					break;
 				}
