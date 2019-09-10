@@ -1,6 +1,7 @@
 package artifactComponent;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -27,6 +28,7 @@ import jason.asSyntax.parser.ParseException;
 public class ArtifactConsumer extends DefaultConsumer {
 	private final ArtifactEndpoint endpoint;
 
+	private static ArrayList<String> artifactsNames = new ArrayList<String>();
 	private static HashMap<String, ArtifactConsumer> consumers = new HashMap<String, ArtifactConsumer>();
 	private final static Logger logger = Logger.getLogger(ArtifactConsumer.class.getName());
 
@@ -57,11 +59,13 @@ public class ArtifactConsumer extends DefaultConsumer {
 
 	public void start() throws Exception {
 		consumers.put(opName, this);
+		artifactsNames.add(artName);
 		super.start();
 	}
 
 	public void stop() throws Exception {
 		consumers.remove(opName, this);
+		artifactsNames.remove(artName);
 		super.stop();
 
 	}
@@ -69,17 +73,17 @@ public class ArtifactConsumer extends DefaultConsumer {
 	public Endpoint getEndpoint() {
 		return endpoint;
 	}
-	
+
 	public static HashMap<String, ArtifactConsumer> getConsumers(){
 		return ArtifactConsumer.consumers;
 	}
-	
+
 	public void operate(CamelArtArch archInstance, ActionExec a) {
 		Term[] arguments = a.getActionTerm().getTermsArray();
-		
+
 		String mod = (args.length>0 && returns.length>0)?", ":"";
 		logger.info("Operation invoked: "+opName+" /"+(args.length + returns.length)+" - "+argsString+mod+returnsString);
-		
+
 		if(arguments.length != args.length + returns.length) {
 			logger.warning("Expected number of arguments in the operation called: " + (args.length + returns.length) + ", got " + arguments.length);
 			String receivedArgs = "";
@@ -89,16 +93,16 @@ public class ArtifactConsumer extends DefaultConsumer {
 			logger.warning("Received arguments: " + receivedArgs);
 			return ;
 		}
-		
+
 		Exchange exchange = new DefaultExchange(endpoint);
-		
+
 		for(int index = 0; index<args.length; index++) {
 			exchange.setProperty(args[index], arguments[index].toString());
 		}
-		
+
 		try {
 			getProcessor().process(exchange);
-			
+
 			Unifier un = a.getIntention().peek().getUnif();
 			a.setResult(true);
 			for(int i=0; i<returns.length; i++) {
@@ -114,7 +118,7 @@ public class ArtifactConsumer extends DefaultConsumer {
 				if(returnHeader.startsWith("[")){
 					returnTerm = ListTermImpl.parseList(returnHeader);
 				}else{
-					returnTerm = Literal.parseLiteral(returnHeader);					
+					returnTerm = Literal.parseLiteral(returnHeader);
 				}
 				logger.info("Unifying "+a.getActionTerm().getTerm(args.length + i)+" to "+returnHeader);
 				if( !un.unifies(returnTerm, a.getActionTerm().getTerm(args.length + i)) ) {
@@ -123,8 +127,8 @@ public class ArtifactConsumer extends DefaultConsumer {
 					break;
 				}
 			}
-			
-			archInstance.actionExecuted(a);			
+
+			archInstance.actionExecuted(a);
 			logger.info("Processed successfully");
 		} catch (Exception e) {
 			logger.warning("Processed badly");
@@ -151,7 +155,7 @@ public class ArtifactConsumer extends DefaultConsumer {
 	public void setArgs(String[] args) {
 		this.args = args;
 	}
-	
+
 	public String getArtName() {
 		return artName;
 	}
@@ -174,6 +178,10 @@ public class ArtifactConsumer extends DefaultConsumer {
 
 	public void setReturnsString(String returnsString) {
 		this.returnsString = returnsString;
+	}
+
+	public static ArrayList<String> getArtifactsNames() {
+		return artifactsNames;
 	}
 
 }

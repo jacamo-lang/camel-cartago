@@ -37,7 +37,12 @@ public class CamelArtArch extends AgArch {
 	@Override
 	public void act(ActionExec a)  {
 		String functor = a.getActionTerm().getFunctor();
-		if(functor.equals("focus") && a.getActionTerm().getTerm(0)!=null && ArtifactConsumer.getConsumers().containsKey(a.getActionTerm().getTerm(0).toString())) {
+		if(functor.equals("focus") && a.getActionTerm().getTerm(0)!=null) {
+			if(!ArtifactConsumer.getArtifactsNames().contains(a.getActionTerm().getTerm(0).toString())){
+				System.out.println("No artifact registered under: "+a.getActionTerm().getTerm(0).toString());
+				super.act(a);
+				return;
+			}
 			focusedArtifacts.add(a.getActionTerm().getTerm(0).toString());
 			a.setResult(true);
 			actionExecuted(a);
@@ -61,7 +66,6 @@ public class CamelArtArch extends AgArch {
 		}else {
 			System.out.println("No operation registered: "+a.getActionTerm().getFunctor());
 			super.act(a);
-			
 		}
 	}
 
