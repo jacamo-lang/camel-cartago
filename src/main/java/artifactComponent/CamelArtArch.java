@@ -17,7 +17,6 @@ public class CamelArtArch extends AgArch {
 	public void init() throws Exception {
 		focusedArtifacts = new Vector<String>();
 		ArtifactCamel.insertArchList(this);
-		System.out.println(getAgArchClassesChain());
 	}
 
 	@Override
@@ -38,7 +37,7 @@ public class CamelArtArch extends AgArch {
 	@Override
 	public void act(ActionExec a)  {
 		String functor = a.getActionTerm().getFunctor();
-		if(functor.equals("focus") && a.getActionTerm().getTerm(0)!=null) {
+		if(functor.equals("focus") && a.getActionTerm().getTerm(0)!=null && ArtifactConsumer.getConsumers().containsKey(a.getActionTerm().getTerm(0).toString())) {
 			focusedArtifacts.add(a.getActionTerm().getTerm(0).toString());
 			a.setResult(true);
 			actionExecuted(a);
@@ -62,6 +61,7 @@ public class CamelArtArch extends AgArch {
 		}else {
 			System.out.println("No operation registered: "+a.getActionTerm().getFunctor());
 			super.act(a);
+			
 		}
 	}
 
